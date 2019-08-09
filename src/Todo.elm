@@ -9,24 +9,25 @@ import Html.Attributes exposing (..)
 main =
     Browser.sandbox { init = init, update = update, view = view }
 
-type alias Todo = String
-type alias TodoList = List String
-type alias Model = {todo: Todo, list: TodoList}
+type alias Content = String
+type alias Todo = {id: Int, content: String, done: Bool}
+type alias TodoList = List Todo
+type alias Model = {counter: Int, content: Content, todo: Todo, list: TodoList}
 init : Model
-init = { todo = "", list = []}
+init = { counter = 0, content = "", todo = Todo 0 "" False , list = []}
 
 type Msg = Add | Change String
 update: Msg -> Model -> Model
 update msg model  =
     case msg of
-        Add -> { model | list =  model.todo::model.list}
-        Change text -> { model | todo = text }
+        Add -> { model | list =  Todo model.counter  model.content False::model.list}
+        Change text -> { model | content = text }
 
 view: Model -> Html Msg
 view model =
     div[]
     [
-        input[value model.todo , onInput Change][],
+        input[value model.content , onInput Change][],
         viewTable model.list,
         button [ onClick Add ] [ text "Add" ]
     ]
@@ -38,5 +39,7 @@ viewTable list =
 itemRow: Todo -> Html Msg
 itemRow todo =
     div[][
-        span[][text todo]
+        span[][text (String.fromInt todo.id)],
+        input[type_ "checkbox"][],
+        span[][text todo.content]
     ]
